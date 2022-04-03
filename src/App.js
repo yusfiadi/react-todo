@@ -1,56 +1,42 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
+import React, { useState, useEffect } from 'react';
+import { Container } from '@mui/material';
+import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import Button from '@mui/material/Button';
+
+import TodoList from './components/TodoList';
+import CreateTodo from './components/CreateTodo';
+import {
+  setInitialTodo
+} from './features/todo/todoSlice';
 import './App.css';
 
 function App() {
+  const dispatch = useDispatch();
+  const [isOpenCreateModal, setIsOpenCreateModal] = useState(false);
+  const handleOpen = () => {
+    setIsOpenCreateModal(true);
+  }
+  const handleClose = () => setIsOpenCreateModal(false);
+
+
+  /* eslint-disable */
+  useEffect(() => {
+    axios.get("https://virtserver.swaggerhub.com/hanabyan/todo/1.0.0/to-do-list").then((response) => {
+      dispatch(setInitialTodo(response.data))
+    })
+  }, [])
+  /* eslint-enable */
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
+      <Container>
+        <TodoList />
+        <Button variant='outlined' onClick={handleOpen} style={{marginTop: "20px"}}>
+          Add new Todo
+        </Button>
+        <CreateTodo open={isOpenCreateModal} handleClose={handleClose} />
+      </Container>
     </div>
   );
 }
